@@ -3,7 +3,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
-model_name = "microsoft/DialoGPT-medium"
+model_1name = "microsoft/DialoGPT-medium"
 tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left')
 model = AutoModelForCausalLM.from_pretrained(model_name)
 chat_history_ids = None

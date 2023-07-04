@@ -1,20 +1,30 @@
-from flask import Flask, render_template, request, redirect, flash, session
+from flask import Flask, render_template, request, redirect, flash, session, jsonify
 import mysql.connector
 import secrets
 import config
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+import logging
+import logging
+from logging import StreamHandler
 
+
+logging.basicConfig(filename='logs.log', level=logging.INFO)
+
+# Configure logger to output to console
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+stream_handler = StreamHandler()
+logger.addHandler(stream_handler)
+
+# Create a logger
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 db = mysql.connector.connect(**config.DB_CONFIG)
-DialoGPT = "microsoft/DialoGPT-medium"
-#LongChat = "lmsys/longchat-13b-16k"
-tokenizer_DialoGPT = AutoTokenizer.from_pretrained(DialoGPT, padding_side='left')
-#tokenizer_LongChat = AutoTokenizer.from_pretrained(LongChat)
-DialoGPT_Model = AutoModelForCausalLM.from_pretrained(DialoGPT)
-#LongChat_Model = AutoModelForCausalLM.from_pretrained(LongChat)
-chat_history_ids = None
+dialogpt_model_name = "microsoft/DialoGPT-medium"
+tokenizer = AutoTokenizer.from_pretrained(dialogpt_model_name, padding_side='left')
+dialogpt_model = AutoModelForCausalLM.from_pretrained(dialogpt_model_name)
 
 # Generate a secure secret key
 secret_key = secrets.token_hex(16)
@@ -151,49 +161,76 @@ def dashboard():
     return render_template('dashboard.html', username=username)
 
 
-@app.route("/chat")
+@app.route("/chat", methods=["GET", "POST"])
 def chat():
-    username = session.get('username')  # Retrieve the username from the session
-    selected_model = request.form.get('model')  # Get the selected model from the form
-    conn = mysql.connector.connect(**config.DB_CONFIG)
-    cursor = conn.cursor()
+    if request.method == "POST":
+        username = session.get('username')  # Retrieve the username from the session
+        selected_model = request.form.get('model')  # Get the selected model from the form
 
-    # Prepare the SQL statement
-    sql = "INSERT INTO chat (date, username, Chat_Model) VALUES (CURDATE(), 'testing', %s)"
+        # Insert the selected model into the MySQL table
+        try:
+            conn = mysql.connector.connect(**config.DB_CONFIG)
+            cursor = conn.cursor()
 
-    # Provide the values as a tuple
-    values = (selected_model,)
+            # Prepare the SQL statement
+            sql = "INSERT INTO chat (date, username, Chat_Model) VALUES (CURDATE(), %s, %s)"
 
-    # Execute the SQL statement
-    cursor.execute(sql, values)
-    conn.commit()
-    cursor.close()
-    conn.close()
+            # Provide the values as a tuple
+            values = (username, selected_model)
 
-    flash("Model selection inserted into the database successfully", "success")
-    return render_template("chat.html")
+            # Execute the SQL statement
+            cursor.execute(sql, values)
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            flash("Model selection inserted into the database successfully", "success")
+
+        except mysql.connector.Error as error:
+            flash("Error while inserting model selection into the database: " + str(error), "error")
+
+    if 'chat_history_ids' not in session:
+        session['chat_history_ids'] = []
+
+    # Retrieve chat history from the session
+    chat_history_ids = session['chat_history_ids']
+
+    return render_template("chat.html", chat_history_ids=chat_history_ids)
 
 
 @app.route("/chat", methods=["POST"])
 def chat_post():
-    global chat_history_ids
+    try:
+        user_input = request.form["message"]
+        logger.info("User input: %s", user_input)
+        chat_history_ids = session.get('chat_history_ids', [])  # Retrieve chat history from the session
 
-    user_input = request.form["message"]
-    input_ids = tokenizer_DialoGPT.encode(user_input + tokenizer_DialoGPT.eos_token, return_tensors="pt")
-    bot_input_ids = torch.cat([chat_history_ids[:, -1024:], input_ids], dim=-1) if chat_history_ids is not None else input_ids
+        # Encode user input
+        input_ids = tokenizer.encode(user_input + tokenizer.eos_token, return_tensors="pt")
 
-    chat_history_ids = DialoGPT_Model.generate(
-        bot_input_ids,
-        max_length=1000,
-        pad_token_id=tokenizer_DialoGPT.eos_token_id,
-    )
+        # Concatenate chat history and input
+        bot_input_ids = torch.cat([chat_history_ids, input_ids], dim=-1) if chat_history_ids else input_ids
 
-    bot_response = tokenizer_DialoGPT.decode(chat_history_ids[:, bot_input_ids.shape[-1]:][0], skip_special_tokens=True)
+        # Generate bot's response
+        chat_history_ids = dialogpt_model.generate(
+            bot_input_ids,
+            max_length=1000,
+            pad_token_id=tokenizer.eos_token_id,
+        )
 
-    # Add bot response to chat history
-    chat_history_ids = torch.cat([chat_history_ids, bot_input_ids], dim=-1)[:, -1024:]
+        # Decode bot's response
+        bot_response = tokenizer.decode(chat_history_ids[:, bot_input_ids.shape[-1]:][0], skip_special_tokens=True)
+        logger.info("Bot response: %s", bot_response)
 
-    return {"bot_response": bot_response}
+        # Update chat history in the session
+        session['chat_history_ids'] = chat_history_ids.tolist()
+
+        return jsonify({"bot_response": bot_response})
+
+    except Exception as e:
+        # Log the error message for debugging
+        logger.exception("An error occurred")
+        return jsonify({"bot_response": "Error: An unexpected error occurred."})
 
 
 if __name__ == "__main__":

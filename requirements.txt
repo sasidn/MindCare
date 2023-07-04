@@ -5,5 +5,7 @@ openai
 python-dotenv
 transformers
 torch
-chatterbot chatterbot_corpus
+scikit-learn
+
+
 

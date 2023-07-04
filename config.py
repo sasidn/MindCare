@@ -2,7 +2,7 @@
 
 DB_CONFIG = {
     'host': 'localhost',
-    'user': 'sasidn',
-    'password': 'sasidn',
-    'database': 'chatbot'
+    'user': 'admin',
+    'password': 'admin',
+    'database': 'mindcare'
 }

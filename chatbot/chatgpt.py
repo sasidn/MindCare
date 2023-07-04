@@ -1,5 +1,5 @@
 import openai
-openai.api_key = "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" # your token goes here
+openai.api_key = "" # your token goes here
 
 def get_model_reply(query, context=[]):
     # combines the new question with a previous context

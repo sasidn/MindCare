@@ -20,7 +20,7 @@
       <div class="model-selection">
         <label for="model-select">Select Model:</label>
         <select id="model-select">
-          <option value="Chatgpt" selected>Chatgpt</option>
+          <option value="Dialogpt" selected>Dialogpt</option>
           <option value="model2">Model 2</option>
           <option value="model3">Model 3</option>
         </select>
@@ -75,6 +75,12 @@
     botResponse(msgText);
   });
 
+  // Add event listener to model select element
+  modelSelect.addEventListener("change", event => {
+    const selectedModel = event.target.value;
+    console.log("Selected Model:", selectedModel);
+  });
+
   function appendMessage(name, img, side, text) {
     const msgHTML = `
       <div class="msg ${side}-msg">
@@ -97,9 +103,9 @@
     const selectedModel = modelSelect.value;
 
     // Send the message and selected model to the server
-    $.post("/chat", { message: rawText }).done(function (data) {
-      const botText = data.bot_response;
-      appendMessage(BOT_NAME, BOT_IMG, "left", botText);
+    $.post("/chat", { message: rawText, model: selectedModel }).done(function (data) {
+      const botResponse = data.bot_response;
+      appendMessage(BOT_NAME, BOT_IMG, "left", botResponse);
     });
   }
 
