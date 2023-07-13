@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thought Diary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F4F4F4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #16425B;
+            margin-top: 0;
+        }
+
+        .thought-diary-container {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #AAAAAA;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: #87cef;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Thought Diary</h1>
+
+    <div class="thought-diary-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date/Time</th>
+                    <th>Situation</th>
+                    <th>Automatic Thought(s)</th>
+                    <th>Emotion(s)</th>
+                    <th>Adaptive Response</th>
+                    <th>Outcome</th>
+                </tr>
+            </thead>
+            <tbody id="thought-diary-table-body">
+                <!-- Existing row data goes here -->
+            </tbody>
+        </table>
+        <div class="button-container">
+            <button class="btn" onclick="addThoughtEntry()">Add Thought Entry</button>
+        </div>
+    </div>
+
+    <!-- JavaScript function to add thought entries dynamically -->
+    <script>
+        function addThoughtEntry() {
+            // Get the thought entry data from the user (e.g., through a form or input fields)
+            var dateTime = prompt("Enter the date and time:");
+            var situation = prompt("Describe the situation:");
+            var automaticThought = prompt("Enter the automatic thought(s):");
+            var emotions = prompt("Enter the emotion(s):");
+            var adaptiveResponse = prompt("Enter the adaptive response:");
+            var outcome = prompt("Enter the outcome:");
+
+            // Create a new row in the table with the entered thought entry data
+            var tableBody = document.getElementById("thought-diary-table-body");
+            var newRow = tableBody.insertRow();
+
+            // Populate the cells in the new row with the thought entry data
+            newRow.innerHTML = `
+                <td>${dateTime}</td>
+                <td>${situation}</td>
+                <td>${automaticThought}</td>
+                <td>${emotions}</td>
+                <td>${adaptiveResponse}</td>
+                <td>${outcome}</td>
+            `;
+        }
+    </script>
+</body>
+</html>

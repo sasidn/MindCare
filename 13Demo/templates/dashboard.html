@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #16425B;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #D9DCD6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center align the buttons */
+            position: relative; /* Add position relative for button positioning */
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: normal;
+            color: #16425B; /* Darker Blue */
+            text-align: center;
+            margin-top: 10;
+            margin-top: 0;
+            position: absolute; /* Position the heading absolutely */
+            top: 24%; /* Position it 50% from the top */
+            left: 50%; /* Position it 50% from the left */
+            transform: translate(-50%, -50%); /* Center it horizontally and vertically */
+            z-index: 1; /* Place it above the image */
+        }
+
+        #banner {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: normal;
+            color: #2F6690; /* Slightly lighter blue */
+            text-align: center;
+        }
+
+        .body-text {
+            color: #16425B;
+            text-align: left;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+        }
+
+        .btn {
+            width: 100%;
+            height: 100%;
+            background-color: #87cef;
+            color: #ffffff;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #195190; /* Turkish Blue */
+        }
+
+        .button:nth-child(1) {
+            grid-column: 1 / span 2;
+        }
+
+        .button:nth-child(2),
+        .button:nth-child(4) {
+            grid-column: 1;
+        }
+
+        .button:nth-child(3),
+        .button:nth-child(5) {
+            grid-column: 2;
+        }
+
+        .button i {
+            margin-left: 8px;
+        }
+        .icon-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .icon-container {
+            margin: 0 20px;
+            border-right: 1px solid #2F6690; /* Add this line to create the vertical line */
+            padding-right: 20px; /* Add padding to separate the line from the icon */
+        }
+
+        .icon-container:last-child {
+            border-right: none; /* Remove the border on the last icon-container */
+            padding-right: 0; /* Remove the padding on the last icon-container */
+        }
+        .contact-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .help-button {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            background-color: #81C3D7; /* Default Blue */
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .help-button button:hover {
+            background-color: #3A7CA5; /* Darker Blue */
+        }
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script>
+        function openHelpWindow() {
+            window.open('help.html', '_blank', 'width=100,height=100');
+        }
+        function openModelWindow() {
+            window.open('model.html', '_blank', 'width=800,height=600');
+        }
+        function openRecommendWindow() {
+            window.open('recommendation.html', '_blank', 'width=800,height=600');
+        }
+        function openChatHistWindow() {
+            window.open('chat_history.html', '_blank', 'width=800,height=600');
+        }
+    </script>
+</head>
+<body>
+<div id="container">
+    <button class="help-button" onclick="openHelpWindow()">Help</button>
+    <img id="banner" src="http://127.0.0.1:5001/static/unsplashM.jpg" alt="Banner Image">
+    <h1>Welcome {{ username }}</h1>
+    <p class="bodytext">
+    Let's explore ways to uplift your mood and cultivate positivity. We can discuss strategies to boost your well-being, simply engage in a soothing conversation, and explore activities. Remember, prioritizing your mental health is crucial, and we are here to support you every step of the way.<br><br>
+    Select any feature below to proceed.
+    </p>
+    <div class="icon-line">
+        <div class="icon-container">
+            <a href="#" onclick="openRecommendWindow()">
+            <i class="fas fa-book fa-4x" style="color: #81C3D7;"></i>
+            </a>
+            <p>Recommendations</p>
+        </div>
+        <div class="icon-container">
+            <a href="#" onclick="openModelWindow()">
+            <i class="fas fa-comments fa-4x" style="color: #81C3D7;"></i>
+            </a>
+            <p>Chat with AI</p>
+        </div>
+        <div class="icon-container">
+            <a href="#" onclick="openChatHistWindow()">
+            <i class="fas fa-history fa-4x" style="color: #81C3D7;"></i>
+            </a>
+            <p>Chat history</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

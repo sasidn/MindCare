@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emotional and Mood Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F4F4F4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #16425B;
+            margin-top: 0;
+        }
+
+        .tracker-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .tracker {
+            width: 48%;
+            background-color: #D9DCD6;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #16425B;
+            color: #FFFFFF;
+            padding: 10px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #AAAAAA;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: #87cef;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emotional and Mood Tracker</h1>
+
+    <div class="tracker-container">
+        <div class="tracker">
+            <h2>Emotional Tracker</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Emotion</th>
+                        <th>Intensity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sample row data -->
+                    <tr>
+                        <td>2023-07-05</td>
+                        <td>Happiness</td>
+                        <td>High</td>
+                    </tr>
+                    <tr>
+                        <td>2023-07-04</td>
+                        <td>Sadness</td>
+                        <td>Medium</td>
+                    </tr>
+                    <!-- Add more rows dynamically using JavaScript -->
+                </tbody>
+            </table>
+            <div class="button-container">
+                <button class="btn" onclick="addEmotionalData()">Add Emotional Data</button>
+            </div>
+        </div>
+
+        <div class="tracker">
+            <h2>Mood Tracker</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Mood</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sample row data -->
+                    <tr>
+                        <td>2023-07-05</td>
+                        <td>Positive</td>
+                    </tr>
+                    <tr>
+                        <td>2023-07-04</td>
+                        <td>Neutral</td>
+                    </tr>
+                    <!-- Add more rows dynamically using JavaScript -->
+                </tbody>
+            </table>
+            <div class="button-container">
+                <button class="btn" onclick="addMoodData()">Add Mood Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript functions to add data dynamically -->
+Here are the JavaScript functions to add data dynamically to the "Emotional Tracker" and "Mood Tracker" tables:
+
+```html
+<script>
+    function addEmotionalData() {
+        // Get the emotional data from the user (e.g., through a form or input fields)
+        var date = prompt("Enter the date (YYYY-MM-DD):");
+        var emotion = prompt("Enter the emotion:");
+        var intensity = prompt("Enter the intensity:");
+
+        // Get the table body element
+        var tableBody = document.querySelector("#emotional-table tbody");
+
+        // Create a new row
+        var newRow = document.createElement("tr");
+
+        // Create table cells for the data
+        var dateCell = document.createElement("td");
+        dateCell.textContent = date;
+
+        var emotionCell = document.createElement("td");
+        emotionCell.textContent = emotion;
+
+        var intensityCell = document.createElement("td");
+        intensityCell.textContent = intensity;
+
+        // Append the cells to the new row
+        newRow.appendChild(dateCell);
+        newRow.appendChild(emotionCell);
+        newRow.appendChild(intensityCell);
+
+        // Append the new row to the table body
+        tableBody.appendChild(newRow);
+    }
+
+    function addMoodData() {
+        // Get the mood data from the user (e.g., through a form or input fields)
+        var date = prompt("Enter the date (YYYY-MM-DD):");
+        var mood = prompt("Enter the mood:");
+
+        // Get the table body element
+        var tableBody = document.querySelector("#mood-table tbody");
+
+        // Create a new row
+        var newRow = document.createElement("tr");
+
+        // Create table cells for the data
+        var dateCell = document.createElement("td");
+        dateCell.textContent = date;
+
+        var moodCell = document.createElement("td");
+        moodCell.textContent = mood;
+
+        // Append the cells to the new row
+        newRow.appendChild(dateCell);
+        newRow.appendChild(moodCell);
+
+        // Append the new row to the table body
+        tableBody.appendChild(newRow);
+    }
+</script>

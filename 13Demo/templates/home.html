@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MindCare HomePage</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #16425B;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #D9DCD6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;/* Center align the buttons */
+            position: relative;/* Add position relative for button positioning */
+        }
+
+        h1 {
+            font-size: 60px;
+            font-weight: normal;
+            color: #2F6690;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        #banner {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .bodytext {
+            color: #2F6690;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+
+        .button {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+            background-color: #D9DCD6;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #81C3D7;
+        }
+
+        .button i {
+            margin-bottom: 10px;
+            font-size: 40px;
+            color: #3A7CA5;
+        }
+
+        .button p {
+            font-size: 18px;
+            color: #2F6690;
+        }
+
+        .contact-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .login-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .contact-button button {
+            background-color: #81C3D7;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-button button {
+            background-color: #81C3D7;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .contact-button button:hover {
+            background-color: #3A7CA5;
+        }
+         .login-button button:hover {
+            background-color: #3A7CA5;
+        }
+
+        .icon-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .icon-container {
+            margin: 0 20px;
+            border-right: 1px solid #2F6690;/* Add this line to create the vertical line */
+            padding-right: 20px;/* Add padding to separate the line from the icon */
+        }
+
+        .icon-container:last-child {
+            border-right: none;/* Remove the border on the last icon-container */
+            padding-right: 0;/* Remove the padding on the last icon-container */
+        }
+
+        .links {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+            gap: 10px;/* Add this line to create a space between the links */
+        }
+
+        .create-link {
+            color: #81C3D7;
+            margin-left: 20px;
+        }
+
+        .forgot-link {
+            color: #81C3D7;
+            margin-right: 15px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script>
+        function openCreateUserWindow() {
+            var createUserModal = new bootstrap.Modal(document.getElementById('createUserModal'));
+            createUserModal.show();
+        }
+
+        function openForgetPasswordWindow() {
+            var forgetPasswordModal = new bootstrap.Modal(document.getElementById('forgetPasswordModal'));
+            forgetPasswordModal.show();
+        }
+
+        function login() {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            // Here, you can perform validation and authentication logic
+            // For simplicity, we'll assume any username and password combination is valid
+
+            // Redirect to the dashboard.html page
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</head>
+
+<body>
+    <div id="container">
+        <h1>MindCare</h1>
+        <img id="banner" src="http://127.0.0.1:5001/static/unsplash.jpg" alt="Banner Image">
+        <p class="bodytext">
+            "Welcome to MindCare, where we believe in the power of small initiatives and Cognitive Behavioral Therapy (CBT) techniques for mental health. We offer informative articles, personal stories, and practical tips to empower your journey of personal growth and transformation. Join us in shaping a supportive and mentally healthy world through the power of CBT thought diary practices.<br><br>
+            At MindCare, we understand the importance of mental health and provide a safe space for healing. Through our resources, we aim to foster self-awareness, promote self-care practices, and break down barriers surrounding mental health. Start your journey of personal growth and transformation with us, as we support one another and embrace the potential for healing and happiness."
+        </p>
+
+        <div class="contact-button">
+            <button onclick="window.location.href='mailto:mindcarechatbot@gmail.com'">Contact <i class="fas fa-envelope"></i></button>
+        </div>
+        <div class="login-button">
+            <form id="login-form" method="POST" action="/login">
+                <input type="text" id="username" name="username" placeholder="Username">
+                <input type="password" id="password" name="password" placeholder="Password">
+                <button type="submit">Login</button>
+                <div class="links">
+                    <a class="create-link" href="#" onclick="openCreateUserWindow()">Create User</a>
+                    <a class="forgot-link" href="#" onclick="openForgetPasswordWindow()">Forgot Password</a>
+                </div>
+            </form>
+        </div>
+        <div class="icon-line">
+            <div class="icon-container">
+                <a Recommendation="/list"><i class="fas fa-book fa-4x" style="color: #3A7CA5;"></i></a>
+                <p>Recommendations</p>
+            </div>
+            <div class="icon-container">
+                <a href="/chat"><i class="fas fa-comments fa-4x" style="color: #3A7CA5;"></i></a>
+                <p>Chat with AI</p>
+            </div>
+            <div class="icon-container">
+                <a href="/history"><i class="fas fa-history fa-4x" style="color: #3A7CA5;"></i></a>
+                <p>Chat history</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createUserModalLabel">Create User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="create-user-form" method="POST" action="/create_user">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+                    </div>
+                    <!-- Add more form fields as needed -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    !-- Forget Password Modal -->
+    <div class="modal fade" id="forgetPasswordModal" tabindex="-1" aria-labelledby="forgetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="forgetPasswordModalLabel">Forgot Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/forget_password">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                    </div>
+                    <!-- Add more form fields as needed -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+</body>
+</html>

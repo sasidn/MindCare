@@ -2,7 +2,7 @@
 
 DB_CONFIG = {
     'host': 'localhost',
-    'user': 'admin',
-    'password': 'admin',
+    'user': 'MindCare',
+    'password': 'MindCare',
     'database': 'mindcare'
 }

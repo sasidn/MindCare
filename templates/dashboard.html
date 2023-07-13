@@ -23,7 +23,7 @@
         }
 
         h1 {
-            font-size: 40px;
+            font-size: 36px;
             font-weight: normal;
             color: #16425B; /* Darker Blue */
             text-align: center;
@@ -119,23 +119,29 @@
             border-right: none; /* Remove the border on the last icon-container */
             padding-right: 0; /* Remove the padding on the last icon-container */
         }
+        .contact-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
 
         .help-button {
             position: absolute;
             top: 1px;
             right: 1px;
-            background-color: #81C3D7;
-            color: #fff;
+            background-color: #81C3D7; /* Default Blue */
+            color: #ffffff;
             border: none;
-            padding: 2px;
-            font-size: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
             border-radius: 4px;
             cursor: pointer;
         }
 
-        .help-button:hover {
-            background-color: #3A7CA5;
+        .help-button button:hover {
+            background-color: #3A7CA5; /* Darker Blue */
         }
+
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
     <script>
@@ -148,8 +154,7 @@
 <div id="container">
     <button class="help-button" onclick="openHelpWindow()">Help</button>
     <img id="banner" src="http://127.0.0.1:5000/static/unsplashM.jpg" alt="Banner Image">
-    <h1>MindCare</h1>
-    <h2>Welcome to the {{ username }}</h2>
+    <h1>Welcome to {{ username }}</h1>
     <p class="bodytext">
     Let's explore ways to uplift your mood and cultivate positivity. We can discuss strategies to boost your well-being, simply engage in a soothing conversation, and explore activities. Remember, prioritizing your mental health is crucial, and we are here to support you every step of the way.<br><br>
     Select any feature below to proceed.

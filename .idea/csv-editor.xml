@@ -3,7 +3,21 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="/13Demo/data/20200325_counsel_chat.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/Chatbot-for-mental-health/mentalhealth.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/Data/20200325_counsel_chat.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

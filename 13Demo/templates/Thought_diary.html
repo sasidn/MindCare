@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thought Diary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F4F4F4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #16425B;
+            margin-top: 0;
+        }
+
+        .thought-diary-container {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #AAAAAA;
+        }
+
+        .button-container {
+            background-color: #2F6690;
+            color: #FFFFFF;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: #87cef;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-submit {
+        background-color: #81C3D7;
+        color: #FFFFFF;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+         table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #AAAAAA;
+        }
+    </style>
+</head>
+<body>
+    <h1>Thought Diary</h1>
+
+    <div class="thought-diary-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date/Time</th>
+                    <th>Situation</th>
+                    <th>Automatic Thought(s)</th>
+                    <th>Emotion(s)</th>
+                    <th>Adaptive Response</th>
+                    <th>Outcome</th>
+                </tr>
+            </thead>
+            <tbody id="thought-diary-table-body">
+                {% for row in thoughts %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[3] }}</td>
+                    <td>{{ row[4] }}</td>
+                    <td>{{ row[5] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <form action="/thought_diary" method="POST">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" name="date" value="{{ current_date }}" placeholder="Date">
+                        </td>
+                        <td>
+                            <input type="text" name="situation" placeholder="Situation">
+                        </td>
+                        <td>
+                            <input type="text" name="automatic_thoughts" placeholder="Automatic Thoughts">
+                        </td>
+                        <td>
+                            <input type="text" name="emotions" placeholder="Emotions">
+                        </td>
+                        <td>
+                            <input type="text" name="adaptive_response" placeholder="Adaptive Response">
+                        </td>
+                        <td>
+                            <input type="text" name="outcome" placeholder="Outcome">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="button-container">
+                <button class="btn-submit" type="submit">Add Thought Entry</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- JavaScript function to add thought entries dynamically -->
+    <script>
+        function addThoughtEntry() {
+            // Get the thought entry data from the user (e.g., through a form or input fields)
+            var dateTime = prompt("Enter the date and time:");
+            var situation = prompt("Describe the situation:");
+            var automaticThought = prompt("Enter the automatic thought(s):");
+            var emotions = prompt("Enter the emotion(s):");
+            var adaptiveResponse = prompt("Enter the adaptive response:");
+            var outcome = prompt("Enter the outcome:");
+
+            // Create a new row in the table with the entered thought entry data
+            var tableBody = document.getElementById("thought-diary-table-body");
+            var newRow = tableBody.insertRow();
+
+            // Populate the cells in the new row with the thought entry data
+            newRow.innerHTML = `
+                <td>${dateTime}</td>
+                <td>${situation}</td>
+                <td>${automaticThought}</td>
+                <td>${emotions}</td>
+                <td>${adaptiveResponse}</td>
+                <td>${outcome}</td>
+            `;
+        }
+    </script>
+</body>
+</html>

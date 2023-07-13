@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat_History</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #16425B;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #D9DCD6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 40px;
+            font-weight: normal;
+            color: #16425B;
+            margin-top: 0;
+        }
+
+        .icon-line {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .icon-container:hover {
+            opacity: 0.8;
+        }
+
+        .icon-container i {
+            font-size: 4rem;
+            color: #81C3D7;
+        }
+
+        .icon-container p {
+            color: #16425B;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .icon-description {
+            margin-top: 20px;
+            color: #16425B;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        .help-button {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            background-color: #81C3D7;
+            color: #fff;
+            border: none;
+            padding: 2px;
+            font-size: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .help-button:hover {
+            background-color: #3A7CA5;
+        }
+        .description {
+            color: #16425B;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Chat History <i class="fas fa-history"></i></h1>
+        <button class="help-button" onclick="openHelpWindow()">Help</button>
+        <img id="banner" src="http://127.0.0.1:5000/static/chatdash_unsplash.jpg" alt="Banner Image">
+        <div class="icon-line">
+            <div class="icon-container" onclick="showDescription('Thought Diary is a therapeutic tool used in Cognitive Behavioral Therapy. It helps individuals identify and challenge negative thoughts and beliefs that contribute to distressing emotions and problematic behaviors.CBT Thought Diary is a practical and effective tool for promoting self-reflection, challenging negative thinking patterns, and fostering cognitive restructuring to enhance emotional well-being and psychological resilience.')">
+                <i class="fas fa-book-open"></i>
+                <p class="description">Thought Diary</p>
+            </div>
+            <div class="icon-container" onclick="showDescription('Chat Summarization simplifies the process of revisiting and recollecting chat conversations by providing a condensed summary of the essential content. It enhances efficiency, saves time, and enables easy retrieval of important information exchanged during your interactions with the chatbot.')">
+                <i class="fas fa-search"></i>
+                <p class="description">Chat Summary</p>
+            </div>
+            <div class="icon-container" onclick="showDescription('Mood Tracker is a feature that allows you to track and monitor your sentiments or emotions during chat conversations. It provides a valuable tool for self-reflection and understanding of your emotional well-being over time.')">
+                <i class="fas fa-chart-line"></i>
+                <p class="description">Mood Tracker</p>
+            </div>
+        </div>
+
+        <div class="icon-description" id="description"></div>
+    </div>
+
+    <script>
+        function showDescription(description) {
+            var descriptionElement = document.getElementById('description');
+            descriptionElement.innerText = description;
+        }
+    </script>
+</body>
+</html>

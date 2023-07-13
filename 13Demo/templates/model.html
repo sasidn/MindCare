@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Model</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #16425B;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #D9DCD6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 25px;
+            font-weight: normal;
+            color: #16425B;
+            margin-top: 0;
+        }
+
+        .model-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .model-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 200px;
+            padding: 20px;
+            background-color: #81C3D7;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .model-card.selected {
+            background-color: #3A7CA5;
+        }
+
+        .model-card p {
+            margin: 0;
+            color: #16425B;
+        }
+
+        .description {
+            margin-top: 20px;
+            color: #16425B;
+        }
+
+        .proceed-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Select a model to proceed</h1>
+        <div class="model-container">
+            <div class="model-card selected" onclick="selectModel('ChatGPT', this)">
+                <p>ChatGPT</p>
+            </div>
+            <div class="model-card" onclick="selectModel('Transformer', this)">
+                <p>Transformer</p>
+            </div>
+            <div class="model-card" onclick="selectModel('Dialogpt', this)">
+                <p>Dialogpt</p>
+            </div>
+            <div class="model-card" onclick="selectModel('MentalBERT', this)">
+                <p>MentalBERT</p>
+            </div>
+            <div class="model-card" onclick="selectModel('SEQ-SEQ', this)">
+                <p>SEQ-SEQ</p>
+            </div>
+        </div>
+        <div class="description" id="modelDescription">
+            <p>Description: Select a model to learn more about it.</p>
+        </div>
+        <button class="proceed-button" onclick="proceed()">Proceed</button>
+
+        <!-- Hidden form to submit the selected model -->
+        <form id="hiddenForm" method="POST" action="/select">
+            <input type="hidden" name="model" id="modelInput">
+        </form>
+    </div>
+     <script>
+        function selectModel(model, element) {
+            var modelCards = document.querySelectorAll('.model-card');
+            var modelDescription = document.getElementById('modelDescription');
+
+            for (var i = 0; i < modelCards.length; i++) {
+            modelCards[i].classList.remove('selected');
+            }
+
+        element.classList.add('selected');
+
+        if (model === 'ChatGPT') {
+            modelDescription.innerHTML = "<p>Description: ChatGPT is a conversational AI model developed by OpenAI. It uses natural language processing techniques to generate human-like responses in chat-based scenarios.</p>";
+        } else if (model === 'Transformer') {
+            modelDescription.innerHTML = "<p>Description: Transformer is a deep learning model architecture that has been widely used in natural language processing tasks. It employs self-attention mechanisms to capture relationships between words in an input sequence.</p>";
+        } else if (model === 'Dialogpt') {
+            modelDescription.innerHTML = "<p>Description: Dialogpt is a language model specifically designed for generating dialogues. It can be used to simulate conversations between a user and an AI agent or to provide contextual responses in chatbot applications.</p>";
+        } else if (model === 'MentalBERT') {
+            modelDescription.innerHTML = "<p>Description: MentalBERT is a language model trained to understand and analyze text related to mental health. It can assist in tasks such as sentiment analysis, identifying mental health issues, and providing support resources.</p>";
+        } else if (model === 'SEQ-SEQ') {
+            modelDescription.innerHTML = "<p>Description: SEQ-SEQ is a sequence-to-sequence model architecture commonly used in machine translation, summarization, and other sequence generation tasks. It consists of an encoder-decoder framework that maps an input sequence to an output sequence.</p>";
+        }
+
+        // Set the selected model value
+            var modelInput = document.getElementById('modelInput');
+            modelInput.value = model;
+        }
+
+        function proceed() {
+        // Get the hidden form and submit it
+            var hiddenForm = document.getElementById('hiddenForm');
+            hiddenForm.submit();
+        }
+    </script>
+</body>
+</html>
