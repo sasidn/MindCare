@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Popup Example</title>
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <h1>Popup Example</h1>
+    <button onclick="openPopup()">Open Popup</button>
+
+    <form id="popup-form" class="popup" action="/handle_popup_response" method="POST">
+        <div class="popup-content">
+            <h2>Popup Content</h2>
+            <p>This is a popup. Do you want to proceed?</p>
+            <button type="submit" name="popup_response" value="yes">Yes</button>
+            <button type="button" onclick="handlePopupResponse('no')">No</button>
+        </div>
+    </form>
+
+    <script>
+        function openPopup() {
+            document.getElementById("popup-form").style.display = "block";
+        }
+        function handlePopupResponse(response) {
+        if (response === "yes") {
+            document.getElementById("popup-form").action = "/thought_diary";
+        } else {
+            document.getElementById("popup-form").action = "/";
+        }
+        document.getElementById("popup-form").submit();
+        }
+    </script>
+</body>
+</html>

@@ -164,14 +164,12 @@ def model_select():
 
 def check_trigger(user_response, trigger_words):
     for word in trigger_words:
-        if word in user_response:
-            # Trigger word found, display the pop-up
-            print("CBT trigger:", word)
-            flash("CBT trigger: " + word)
-            return True
+        if word.lower() in user_response.lower():
+            # Trigger word found
+            return word
 
     # No trigger word found
-    return False
+    return None
 @app.route("/chat", methods=["GET", "POST"])
 def chat():
     chatbot_response = None
@@ -210,12 +208,16 @@ def chat():
                 db.commit()
 
                 cursor.execute('SELECT triggers FROM CBT_trigger')
-                trigger_words = [word[0] for word in cursor.fetchall()]
-                trigger_word_found = check_trigger(user_input, trigger_words)
+                trigger_words = ["sad"]
+                #trigger_words = [word[0] for word in cursor.fetchall()]
+                trigger_word = check_trigger(user_input, trigger_words)
 
-                if trigger_word_found :
-                    # Redirect to the Thought Diary page
-                    return redirect("/thought_diary.html")
+                if trigger_word:
+                    print("trigger word is found")
+                    # Render the chat.html template with the trigger word
+                    confirmation_message = f"Do you want to fill out the Thought Diary? Trigger word: {trigger_word}"
+                    print(confirmation_message)
+                    return render_template("chat.html", messages=messages, confirmation_message=confirmation_message)
 
         return jsonify({"response": chatbot_response})
 
@@ -226,19 +228,18 @@ def chat():
 def handle_popup_response():
     popup_response = request.form["popup_response"]
 
-    # Process the popup_response and send the confirmation back to the client
-    # For example, you can check if the response is "yes" and return a JSON response
-
     if popup_response == "yes":
-        return {"popup_confirmed": True}
+        return redirect("/thought_diary")
+    elif popup_response == "no":
+        return redirect("/chat")
     else:
-        return {"popup_confirmed": False}
+        return redirect("/chat")
 
 
 @app.route("/thought_diary.html")
 def thought_diary():
     return render_template("thought_diary.html")
-@app.route("/thought_diary", methods=["POST"])
+@app.route("/thought_diary", methods=["GET", "POST"])
 def thought_diary_post():
     if request.method == "POST":
         username = session["username"]
@@ -248,26 +249,27 @@ def thought_diary_post():
         emotions = request.form["emotions"]
         adaptive_response = request.form["adaptive_response"]
         outcome = request.form["outcome"]
-        # Retrieve the values for emotions, adaptive response, and outcome in a similar way
+
+        # Advance to the next result set, if available
+        while cursor.nextset():
+            pass
 
         # Insert the thought entry into the database
         query = "INSERT INTO thought_diary (username, date, situation, automatic_thoughts, emotions, adaptive_response, outcome) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         values = (username, current_date, situation, automatic_thoughts, emotions, adaptive_response, outcome)
         cursor.execute(query, values)
         db.commit()
-        flash("Thought entry added successfully!", "success")
-        print("success")
 
-        # Store the thought entry data in the database or perform any other required actions
+        flash("Thought entry added successfully!", "success")
 
         # Redirect to the chat page after handling the form submission
         return redirect("/chat")
 
     # Handle GET requests separately if needed
     # ...
-    print("cechking")
+
     # Return the Thought Diary page template
-    return "Invalid request method for /thought_diary"
+    return render_template("thought_diary.html")
 
 
 

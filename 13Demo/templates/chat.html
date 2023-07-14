@@ -11,174 +11,160 @@
 </head>
 
 <body>
-<section class="msger">
-    <header class="msger-header">
-        <div class="msger-header-title">
-            <i class="fas fa-bug"></i> MindCare Chatbot <i class="fas fa-bug"></i>
-        </div>
-    </header>
+    <section class="msger">
+        <header class="msger-header">
+            <div class="msger-header-title">
+                <i class="fas fa-bug"></i> MindCare Chatbot <i class="fas fa-bug"></i>
+            </div>
+        </header>
 
-    <main class="msger-chat">
-        {% for message in messages %}
-        {% if message.side == "left" %}
-        <div class="msg left-msg">
-            {% else %}
-            <div class="msg right-msg">
-                {% endif %}
-                <div class="msg-img" style="background-image: url({{ message.img }})"></div>
-                <div class="msg-bubble">
-                    <div class="msg-info">
-                        <div class="msg-info-name">{{ message.name }}</div>
-                        <div class="msg-info-time">{{ message.time }}</div>
+        <main class="msger-chat">
+            {% for message in messages %}
+            {% if message.side == "left" %}
+            <div class="msg left-msg">
+                {% else %}
+                <div class="msg right-msg">
+                    {% endif %}
+                    <div class="msg-img" style="background-image: url({{ message.img }})"></div>
+                    <div class="msg-bubble">
+                        <div class="msg-info">
+                            <div class="msg-info-name">{{ message.name }}</div>
+                            <div class="msg-info-time">{{ message.time }}</div>
+                        </div>
+                        <div class="msg-text">{{ message.text }}</div>
                     </div>
-                    <div class="msg-text">{{ message.text }}</div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-    </main>
+        </main>
 
-    <form action="/chat" class="msger-inputarea" method="POST">
-        <input class="msger-input" id="textInput" name="message" placeholder="Enter your message..." type="text">
-        <button class="msger-send-btn" type="submit">Send</button>
-    </form>
-</section>
+        {% if confirmation_message %}
+        <script>
+            window.onload = function() {
+                openPopup();
+            };
 
-<script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
-<script>
-    const msgerForm = document.querySelector(".msger-inputarea");
-    const msgerInput = document.querySelector(".msger-input");
-    const msgerChat = document.querySelector(".msger-chat");
+            function openPopup() {
+                const popup = document.getElementById("popup");
+                popup.style.display = "block";
+            }
+            function handlePopupResponse(response) {
+                const popupForm = document.getElementById("popup-form");
+                const popupResponseInput = document.getElementById("popup-response");
 
-    const BOT_IMG = "/static/chatbot.png";
-    const PERSON_IMG = "/static/user.png";
-    const BOT_NAME = "ChatBot";
-    const PERSON_NAME = "You";
-
-    msgerForm.addEventListener("submit", event => {
-      event.preventDefault();
-
-      const msgText = msgerInput.value;
-      if (!msgText) return;
-
-      appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
-      msgerInput.value = "";
-      botResponse(msgText);
-    });
-
-    function appendMessage(name, img, side, text) {
-      const msgHTML = `
-        <div class="msg ${side}-msg">
-          <div class="msg-img" style="background-image: url(${img})"></div>
-          <div class="msg-bubble">
-            <div class="msg-info">
-              <div class="msg-info-name">${name}</div>
-              <div class="msg-info-time">${formatDate(new Date())}</div>
+                popupResponseInput.value = response;
+                popupForm.submit();
+                }
+        </script>
+        <div id="popup" class="popup">
+        <div class="popup-content">
+            <div class="popup-message">{{ confirmation_message }}</div>
+            <div class="popup-buttons">
+                <form id="popup-form" action="/handle_popup_response" method="POST">
+                    <button class="popup-button" type="submit" name="popup_response" value="yes">Yes</button>
+                    <button class="popup-button" type="submit" name="popup_response" value="no">No</button>
+                </form>
             </div>
-            <div class="msg-text">${text}</div>
-          </div>
         </div>
-      `;
-
-      msgerChat.insertAdjacentHTML("beforeend", msgHTML);
-      msgerChat.scrollTop += 500;
-    }
-
-
-
-    function formatDate(date) {
-      const h = "0" + date.getHours();
-      const m = "0" + date.getMinutes();
-      return `${h.slice(-2)}:${m.slice(-2)}`;
-    }
-    // Function to handle the pop-up
-function openPopup() {
-  // Code to open the pop-up dialog
-  // You can use libraries like Bootstrap or jQuery UI for this
-
-  // Create the popup HTML
-  const popupHTML = `
-    <div class="popup">
-      <div class="popup-content">
-        <div class="popup-message">Do you want to fill out the Thought Diary?</div>
-        <div class="popup-buttons">
-          <button class="popup-button" onclick="handlePopupResponse('yes')">Yes</button>
-          <button class="popup-button" onclick="handlePopupResponse('no')">No</button>
         </div>
-      </div>
-    </div>
-  `;
+        {% endif %}
 
-  // Append the popup HTML to the chat window
-  const chatWindow = document.querySelector(".msger-chat");
-  chatWindow.insertAdjacentHTML("beforeend", popupHTML);
-}
+        <form action="/chat" class="msger-inputarea" method="POST">
+            <input class="msger-input" id="textInput" name="message" placeholder="Enter your message..." type="text">
+            <button class="msger-send-btn" type="submit">Send</button>
+        </form>
+    </section>
 
-// Function to handle the user's response to the pop-up
-function handlePopupResponse(response) {
-  // Code to handle the response and send it back to the server
-  // You can use AJAX to send the response to a Flask route for further processing
+    <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
+    <script>
+        const chatWindow = document.getElementById('chat-window');
+        const messageForm = document.getElementById('message-form');
+        const userInput = document.getElementById('user-input');
+        const messages = document.getElementById('messages');
+        const popup = document.getElementById('popup');
+        const popupYes = document.getElementById('popup-yes');
+        const popupNo = document.getElementById('popup-no');
 
-  // Example code:
-  // Send the response to the server
-  const formData = new FormData();
-  formData.append("popup_response", response);
+        popupYes.addEventListener('click', handlePopupResponse);
+        popupNo.addEventListener('click', handlePopupResponse);
 
-  fetch("/handle_popup_response", {
-    method: "POST",
-    body: formData
-  })
-    .then(response => response.json())
-    .then(data => {
-      // Handle the server response if needed
-      // For example, if the server confirms the response, you can proceed to the Thought Diary page
-      if (data.popup_confirmed) {
-        window.location.href = "/thought_diary.html";
-      }
-    });
+        messageForm.addEventListener('submit', event => {
+            event.preventDefault();
+            const userMessage = userInput.value;
+            appendMessage('You', userMessage);
+            userInput.value = '';
+            botResponse(userMessage);
+        });
 
-  // Remove the popup from the chat window
-  const popup = document.querySelector(".popup");
-  popup.remove();
-}
+        function appendMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            messages.appendChild(messageElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
 
-// Function to check if the bot response triggers the popup
-function checkTriggerPopup(botResponse) {
-  const triggerWords = ["sad"]; // Add more trigger words as needed
+        function botResponse(message) {
+            // Send the message to the server and receive the bot response
+            // You can make an AJAX request or use WebSocket for real-time communication
+            const botResponse = getBotResponse(message);
 
-  for (const word of triggerWords) {
-    if (botResponse.toLowerCase().includes(word)) {
-      openPopup();
-      break;
-    }
-  }
-}
+            // Check if the bot response triggers the popup
+            const triggerWords = ['sad']; // Add more trigger words as needed
+            const triggerWordFound = checkTrigger(botResponse, triggerWords);
 
-function botResponse(rawText) {
-  // Send the message to the server
-  const formData = new FormData();
-  formData.append("message", rawText);
+            // Display the bot response
+            appendMessage('Bot', botResponse);
 
-  fetch("/chat", {
-    method: "POST",
-    body: formData
-  })
-    .then(response => response.json())
-    .then(data => {
-      const botResponse = data.response;
-      appendMessage(BOT_NAME, BOT_IMG, "left", botResponse);
+            // If the trigger word is found, show the popup
+            if (triggerWordFound) {
+                openPopup();
+            }
+        }
 
-      // Check if the bot response triggers the popup
-      checkTriggerPopup(botResponse);
-    });
-}
+        function checkTrigger(message, triggerWords) {
+            for (const word of triggerWords) {
+                if (message.toLowerCase().includes(word)) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
+        function openPopup() {
+            popup.style.display = 'block';
+        }
 
+        function closePopup() {
+            popup.style.display = 'none';
+        }
 
+        function handlePopupResponse(event) {
+            const response = event.target.id === 'popup-yes' ? 'yes' : 'no';
+            closePopup();
 
+            // Send the response to the server and handle accordingly
+            if (response === 'yes') {
+                // Redirect to the Thought Diary page or perform any other action
+                console.log('Redirecting to Thought Diary page...');
+            } else {
+                // Continue the chat or perform any other action
+                console.log('Continuing the chat...');
+            }
+        }
 
-
-
-</script>
+        // Simulated function to get the bot response
+        function getBotResponse(message) {
+            // Replace with your own implementation to get the bot response from the server
+            // This is just a placeholder
+            const responses = {
+                'hello': 'Hello! How can I assist you?',
+                'how are you?': 'I am a bot. I do not have feelings.',
+                'thank you': 'You\'re welcome!'
+            };
+            return responses[message.toLowerCase()] || 'Sorry, I didn\'t understand that.';
+        }
+    </script>
 </body>
 
 </html>

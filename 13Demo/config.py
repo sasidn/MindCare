@@ -11,4 +11,4 @@ MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USERNAME = 'mindcarechatbot@gmail.com'
-MAIL_PASSWORD = 'MindCare@2023'
+MAIL_PASSWORD = ''
