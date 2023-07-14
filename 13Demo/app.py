@@ -1,18 +1,14 @@
-from flask import Flask, render_template, request, flash, redirect, session,jsonify
+from flask import Flask, render_template, request, flash, redirect, session, jsonify
 from flask_mail import Message, Mail
 import mysql.connector
 import secrets
-import bcrypt
 from config import MAIL_SERVER, MAIL_PORT, MAIL_USE_TLS, MAIL_USERNAME, MAIL_PASSWORD
 from wtforms import Form, StringField, PasswordField, validators
-from datetime import date,datetime
-from chatGPT import start_chatbot, generate_response
-import json
-
-
-
+from datetime import date, datetime
+from chatGPT import start_chatbot
 
 app = Flask(__name__)
+
 # Configure Flask-Mail
 app.config['MAIL_SERVER'] = MAIL_SERVER
 app.config['MAIL_PORT'] = MAIL_PORT
@@ -21,6 +17,7 @@ app.config['MAIL_USERNAME'] = MAIL_USERNAME
 app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
 
 mail = Mail(app)
+
 # Generate a secure secret key
 secret_key = secrets.token_hex(16)
 
@@ -49,6 +46,7 @@ def index():
     else:
         return redirect("/create_user")
 
+
 @app.route("/create_user", methods=["GET", "POST"])
 def create_user():
     if request.method == "POST":
@@ -76,6 +74,7 @@ def create_user():
 
     return render_template("home.html")
 
+
 @app.route("/forget_password", methods=["GET", "POST"])
 def forget_password():
     if request.method == "POST":
@@ -99,6 +98,7 @@ def forget_password():
         return redirect("/")
 
     return render_template("forget_password.html")
+
 
 def send_password_email(email, username, password):
     msg = Message("Password Reminder", sender="your_email@example.com", recipients=[email])
@@ -145,6 +145,7 @@ def model():
     # Handle the GET request
     return render_template("model.html")
 
+
 @app.route("/select", methods=["POST"])
 def model_select():
     username = session["username"]
@@ -162,6 +163,7 @@ def model_select():
 
     return redirect("/chat")
 
+
 def check_trigger(user_response, trigger_words):
     for word in trigger_words:
         if word.lower() in user_response.lower():
@@ -170,18 +172,21 @@ def check_trigger(user_response, trigger_words):
 
     # No trigger word found
     return None
+
+
 @app.route("/chat", methods=["GET", "POST"])
 def chat():
     chatbot_response = None
 
     username = session["username"]
     query = "SELECT MAX(Chat_id) FROM chat WHERE username = %s AND date = CURDATE()"
-    cursor.execute(query, (username,))
-    max_chat_id = cursor.fetchone()[0]
+    #cursor.execute(query, (username,))
+    #max_chat_id = cursor.fetchone()[0]
 
     messages = [
         {"name": "ChatBot", "img": "/static/chatbot.png", "time": "12:00 PM", "text": "Hello, how can I help you?"}
     ]
+    result = 'ChatGPT';
 
     if request.method == "POST":
         query = """
@@ -191,25 +196,29 @@ def chat():
                 AND date = CURDATE()
                 AND Chat_id = %s
         """
-        cursor.execute(query, (username, max_chat_id))
-        result = cursor.fetchone()
+        #cursor.execute(query, (username, max_chat_id))
+        #result = cursor.fetchone()
 
         if result:
-            chat_model = result[0]
+            chat_model = result
             if chat_model == 'ChatGPT':
                 user_input = request.form["message"]
-                chatbot_response = start_chatbot(user_input)
+                bot_response = start_chatbot(user_input)
 
                 query = """
                     INSERT INTO Messages (chat_id, Username, date, user_response, bot_response)
                     VALUES (%s, %s, CURRENT_TIMESTAMP, %s, %s)
                 """
-                cursor.execute(query, (max_chat_id, username, user_input, chatbot_response))
-                db.commit()
+                #cursor.execute(query, (max_chat_id, username, user_input, bot_response))
+                #db.commit()
 
-                cursor.execute('SELECT triggers FROM CBT_trigger')
+                # Fetch any remaining unread results
+                while cursor.nextset():
+                    pass
+
+                #cursor.execute('SELECT triggers FROM CBT_trigger')
                 trigger_words = ["sad"]
-                #trigger_words = [word[0] for word in cursor.fetchall()]
+                # trigger_words = [word[0] for word in cursor.fetchall()]
                 trigger_word = check_trigger(user_input, trigger_words)
 
                 if trigger_word:
@@ -218,10 +227,12 @@ def chat():
                     confirmation_message = f"Do you want to fill out the Thought Diary? Trigger word: {trigger_word}"
                     print(confirmation_message)
                     return render_template("chat.html", messages=messages, confirmation_message=confirmation_message)
-
-        return jsonify({"response": chatbot_response})
+                # Update the chatbot_response variable with bot_response
+                chatbot_response = bot_response
+        #return jsonify({"response": bot_response})
 
     return render_template("chat.html", messages=messages)
+
 
 
 @app.route("/handle_popup_response", methods=["POST"])
@@ -239,6 +250,8 @@ def handle_popup_response():
 @app.route("/thought_diary.html")
 def thought_diary():
     return render_template("thought_diary.html")
+
+
 @app.route("/thought_diary", methods=["GET", "POST"])
 def thought_diary_post():
     if request.method == "POST":
@@ -270,9 +283,6 @@ def thought_diary_post():
 
     # Return the Thought Diary page template
     return render_template("thought_diary.html")
-
-
-
 
 @app.route("/recommendation.html")
 def get_recommendations():

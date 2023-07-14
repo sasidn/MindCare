@@ -4,79 +4,83 @@
 <head>
     <meta charset="UTF-8">
     <title>MindCare</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ url_for('static', filename='styles/style.css') }}" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 
 <body>
-    <section class="msger">
-        <header class="msger-header">
-            <div class="msger-header-title">
-                <i class="fas fa-bug"></i> MindCare Chatbot <i class="fas fa-bug"></i>
-            </div>
-        </header>
+<section class="msger">
+    <header class="msger-header">
+        <div class="msger-header-title">
+            <i class="fas fa-bug"></i> MindCare Chatbot <i class="fas fa-bug"></i>
+        </div>
+    </header>
 
-        <main class="msger-chat">
-            {% for message in messages %}
-            {% if message.side == "left" %}
-            <div class="msg left-msg">
-                {% else %}
-                <div class="msg right-msg">
-                    {% endif %}
-                    <div class="msg-img" style="background-image: url({{ message.img }})"></div>
-                    <div class="msg-bubble">
-                        <div class="msg-info">
-                            <div class="msg-info-name">{{ message.name }}</div>
-                            <div class="msg-info-time">{{ message.time }}</div>
-                        </div>
-                        <div class="msg-text">{{ message.text }}</div>
+    <main class="msger-chat">
+        {% for message in messages %}
+        {% if message.side == "left" %}
+        <div class="msg left-msg">
+            {% else %}
+            <div class="msg right-msg">
+                {% endif %}
+                <div class="msg-img" style="background-image: url({{ message.img }})"></div>
+                <div class="msg-bubble">
+                    <div class="msg-info">
+                        <div class="msg-info-name">{{ message.name }}</div>
+                        <div class="msg-info-time">{{ message.time }}</div>
                     </div>
+                    <div class="msg-text">{{ message.text }}</div>
                 </div>
-                {% endfor %}
             </div>
-        </main>
+            {% endfor %}
+    </main>
 
-        {% if confirmation_message %}
-        <script>
-            window.onload = function() {
-                openPopup();
-            };
-
-            function openPopup() {
-                const popup = document.getElementById("popup");
-                popup.style.display = "block";
-            }
-            function handlePopupResponse(response) {
-                const popupForm = document.getElementById("popup-form");
-                const popupResponseInput = document.getElementById("popup-response");
-
-                popupResponseInput.value = response;
-                popupForm.submit();
+    {% if confirmation_message %}
+    <script>
+                function openPopup() {
+                    const popup = document.getElementById("popup");
+                    popup.style.display = "block";
                 }
-        </script>
-        <div id="popup" class="popup">
+
+                function handlePopupResponse(response) {
+                    const popupForm = document.getElementById("popup-form");
+                    const popupResponseInput = document.getElementById("popup-response");
+
+                    popupResponseInput.value = response;
+                    popupForm.submit();
+                }
+
+
+
+
+
+
+
+    </script>
+
+    <div id="popup" class="popup">
         <div class="popup-content">
             <div class="popup-message">{{ confirmation_message }}</div>
             <div class="popup-buttons">
                 <form id="popup-form" action="/handle_popup_response" method="POST">
-                    <button class="popup-button" type="submit" name="popup_response" value="yes">Yes</button>
-                    <button class="popup-button" type="submit" name="popup_response" value="no">No</button>
+                    <input type="hidden" id="popup-response" name="popup_response">
+                    <button class="popup-button" onclick="handlePopupResponse('yes')">Yes</button>
+                    <button class="popup-button" onclick="handlePopupResponse('no')">No</button>
                 </form>
             </div>
         </div>
-        </div>
-        {% endif %}
+    </div>
+    {% endif %}
 
-        <form action="/chat" class="msger-inputarea" method="POST">
-            <input class="msger-input" id="textInput" name="message" placeholder="Enter your message..." type="text">
-            <button class="msger-send-btn" type="submit">Send</button>
-        </form>
-    </section>
+    <form id="message-form" class="msger-inputarea" method="POST">
+        <input id="user-input" class="msger-input" name="message" placeholder="Enter your message..." type="text">
+        <button class="msger-send-btn" type="submit">Send</button>
+    </form>
+</section>
 
-    <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
-    <script>
+<script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
+<script>
         const chatWindow = document.getElementById('chat-window');
         const messageForm = document.getElementById('message-form');
         const userInput = document.getElementById('user-input');
@@ -139,19 +143,12 @@
             popup.style.display = 'none';
         }
 
-        function handlePopupResponse(event) {
-            const response = event.target.id === 'popup-yes' ? 'yes' : 'no';
-            closePopup();
-
-            // Send the response to the server and handle accordingly
-            if (response === 'yes') {
-                // Redirect to the Thought Diary page or perform any other action
-                console.log('Redirecting to Thought Diary page...');
-            } else {
-                // Continue the chat or perform any other action
-                console.log('Continuing the chat...');
-            }
+        function handlePopupResponse(response) {
+            const popupResponseInput = document.getElementById("popup-response");
+            popupResponseInput.value = response;
+            document.getElementById("popup-form").submit();
         }
+
 
         // Simulated function to get the bot response
         function getBotResponse(message) {
@@ -164,7 +161,10 @@
             };
             return responses[message.toLowerCase()] || 'Sorry, I didn\'t understand that.';
         }
-    </script>
+
+
+
+</script>
 </body>
 
 </html>
