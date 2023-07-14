@@ -3,9 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>MindCare</title>
+    <title>Chatbot</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ url_for('static', filename='styles/style.css') }}" rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 
@@ -13,7 +15,7 @@
 <section class="msger">
     <header class="msger-header">
         <div class="msger-header-title">
-            <i class="fas fa-bug"></i> MindCare Chatbot <i class="fas fa-bug"></i>
+            <i class="fas fa-bug"></i> Chatbot <i class="fas fa-bug"></i>
         </div>
     </header>
 
@@ -34,32 +36,29 @@
                 </div>
             </div>
             {% endfor %}
+
+            {% if bot_response %}
+            <div class="msg left-msg">
+                <div class="msg-img" style="background-image: url(/static/chatbot.png)"></div>
+                <div class="msg-bubble">
+                    <div class="msg-info">
+                        <div class="msg-info-name">ChatBot</div>
+                        <div class="msg-info-time">12:00 PM</div>
+                    </div>
+                    <div class="msg-text">{{ bot_response }}</div>
+                </div>
+            </div>
+            {% endif %}
     </main>
 
+
+    <form class="msger-inputarea" method="POST" action="/chat">
+        <input type="text" class="msger-input" id="textInput" name="message" placeholder="Enter your message...">
+        <button type="submit" class="msger-send-btn">Send</button>
+    </form>
+
     {% if confirmation_message %}
-    <script>
-                function openPopup() {
-                    const popup = document.getElementById("popup");
-                    popup.style.display = "block";
-                }
-
-                function handlePopupResponse(response) {
-                    const popupForm = document.getElementById("popup-form");
-                    const popupResponseInput = document.getElementById("popup-response");
-
-                    popupResponseInput.value = response;
-                    popupForm.submit();
-                }
-
-
-
-
-
-
-
-    </script>
-
-    <div id="popup" class="popup">
+    <div class="popup">
         <div class="popup-content">
             <div class="popup-message">{{ confirmation_message }}</div>
             <div class="popup-buttons">
@@ -72,99 +71,85 @@
         </div>
     </div>
     {% endif %}
-
-    <form id="message-form" class="msger-inputarea" method="POST">
-        <input id="user-input" class="msger-input" name="message" placeholder="Enter your message..." type="text">
-        <button class="msger-send-btn" type="submit">Send</button>
-    </form>
 </section>
 
 <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
 <script>
-        const chatWindow = document.getElementById('chat-window');
-        const messageForm = document.getElementById('message-form');
-        const userInput = document.getElementById('user-input');
-        const messages = document.getElementById('messages');
-        const popup = document.getElementById('popup');
-        const popupYes = document.getElementById('popup-yes');
-        const popupNo = document.getElementById('popup-no');
+  const msgerForm = document.querySelector(".msger-inputarea");
+  const msgerInput = document.querySelector(".msger-input");
+  const msgerChat = document.querySelector(".msger-chat");
+  const popup = document.querySelector(".popup");
 
-        popupYes.addEventListener('click', handlePopupResponse);
-        popupNo.addEventListener('click', handlePopupResponse);
+  const BOT_IMG = "/static/chatbot.png";
+  const PERSON_IMG = "/static/user.png";
+  const BOT_NAME = "ChatBot";
+  const PERSON_NAME = "You";
 
-        messageForm.addEventListener('submit', event => {
-            event.preventDefault();
-            const userMessage = userInput.value;
-            appendMessage('You', userMessage);
-            userInput.value = '';
-            botResponse(userMessage);
-        });
+  msgerForm.addEventListener("submit", event => {
+    event.preventDefault();
 
-        function appendMessage(sender, message) {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message');
-            messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
-            messages.appendChild(messageElement);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
+    const msgText = msgerInput.value;
+    if (!msgText) return;
 
-        function botResponse(message) {
-            // Send the message to the server and receive the bot response
-            // You can make an AJAX request or use WebSocket for real-time communication
-            const botResponse = getBotResponse(message);
+    appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
+    msgerInput.value = "";
+    botResponse(msgText);
+  });
 
-            // Check if the bot response triggers the popup
-            const triggerWords = ['sad']; // Add more trigger words as needed
-            const triggerWordFound = checkTrigger(botResponse, triggerWords);
+  function appendMessage(name, img, side, text) {
+    const msgHTML = `
+      <div class="msg ${side}-msg">
+        <div class="msg-img" style="background-image: url(${img})"></div>
+        <div class="msg-bubble">
+          <div class="msg-info">
+            <div class="msg-info-name">${name}</div>
+            <div class="msg-info-time">${formatDate(new Date())}</div>
+          </div>
+          <div class="msg-text">${text}</div>
+        </div>
+      </div>
+    `;
 
-            // Display the bot response
-            appendMessage('Bot', botResponse);
+    msgerChat.insertAdjacentHTML("beforeend", msgHTML);
+    msgerChat.scrollTop += 500;
+  }
 
-            // If the trigger word is found, show the popup
-            if (triggerWordFound) {
-                openPopup();
-            }
-        }
+  function botResponse(rawText) {
+    // Send the message to the server
+    $.post("/chat", { message: rawText }).done(function (data) {
+      const response = JSON.parse(data);
+      const botResponse = response.bot_response;
+      appendMessage(BOT_NAME, BOT_IMG, "left", botResponse);
 
-        function checkTrigger(message, triggerWords) {
-            for (const word of triggerWords) {
-                if (message.toLowerCase().includes(word)) {
-                    return true;
-                }
-            }
-            return false;
-        }
+      const triggerWord = response.trigger_word;
+      if (triggerWord) {
+        openPopup(triggerWord);
+      }
+    });
+  }
 
-        function openPopup() {
-            popup.style.display = 'block';
-        }
+  function formatDate(date) {
+    const h = "0" + date.getHours();
+    const m = "0" + date.getMinutes();
+    return `${h.slice(-2)}:${m.slice(-2)}`;
+  }
 
-        function closePopup() {
-            popup.style.display = 'none';
-        }
+  function openPopup(triggerWord) {
+    const popupMessage = document.querySelector(".popup-message");
+    popupMessage.innerText = `Do you want to fill out the Thought Diary? Trigger word: ${triggerWord}`;
+    popup.style.display = "block";
+  }
 
-        function handlePopupResponse(response) {
-            const popupResponseInput = document.getElementById("popup-response");
-            popupResponseInput.value = response;
-            document.getElementById("popup-form").submit();
-        }
-
-
-        // Simulated function to get the bot response
-        function getBotResponse(message) {
-            // Replace with your own implementation to get the bot response from the server
-            // This is just a placeholder
-            const responses = {
-                'hello': 'Hello! How can I assist you?',
-                'how are you?': 'I am a bot. I do not have feelings.',
-                'thank you': 'You\'re welcome!'
-            };
-            return responses[message.toLowerCase()] || 'Sorry, I didn\'t understand that.';
-        }
+  function handlePopupResponse(response) {
+    const popupResponseInput = document.getElementById("popup-response");
+    popupResponseInput.value = response;
+    document.getElementById("popup-form").submit();
+  }
 
 
 
 </script>
+
 </body>
 
 </html>

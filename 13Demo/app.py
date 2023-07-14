@@ -6,6 +6,7 @@ from config import MAIL_SERVER, MAIL_PORT, MAIL_USE_TLS, MAIL_USERNAME, MAIL_PAS
 from wtforms import Form, StringField, PasswordField, validators
 from datetime import date, datetime
 from chatGPT import start_chatbot
+import json
 
 app = Flask(__name__)
 
@@ -32,6 +33,7 @@ db = mysql.connector.connect(
     database="mindcare"
 )
 cursor = db.cursor()
+
 
 # Define the UserForm for input validation
 class UserForm(Form):
@@ -141,7 +143,6 @@ def dashboard():
 
 @app.route("/model.html", methods=["GET", "POST"])
 def model():
-
     # Handle the GET request
     return render_template("model.html")
 
@@ -177,62 +178,27 @@ def check_trigger(user_response, trigger_words):
 @app.route("/chat", methods=["GET", "POST"])
 def chat():
     chatbot_response = None
-
     username = session["username"]
-    query = "SELECT MAX(Chat_id) FROM chat WHERE username = %s AND date = CURDATE()"
-    #cursor.execute(query, (username,))
-    #max_chat_id = cursor.fetchone()[0]
-
     messages = [
         {"name": "ChatBot", "img": "/static/chatbot.png", "time": "12:00 PM", "text": "Hello, how can I help you?"}
     ]
-    result = 'ChatGPT';
 
     if request.method == "POST":
-        query = """
-            SELECT Chat_Model
-            FROM chat
-            WHERE username = %s
-                AND date = CURDATE()
-                AND Chat_id = %s
-        """
-        #cursor.execute(query, (username, max_chat_id))
-        #result = cursor.fetchone()
+        user_input = request.form["message"]
+        bot_response = start_chatbot(user_input)
 
-        if result:
-            chat_model = result
-            if chat_model == 'ChatGPT':
-                user_input = request.form["message"]
-                bot_response = start_chatbot(user_input)
+        trigger_words = ["sad"]
+        trigger_word = check_trigger(user_input, trigger_words)
 
-                query = """
-                    INSERT INTO Messages (chat_id, Username, date, user_response, bot_response)
-                    VALUES (%s, %s, CURRENT_TIMESTAMP, %s, %s)
-                """
-                #cursor.execute(query, (max_chat_id, username, user_input, bot_response))
-                #db.commit()
+        if trigger_word:
+            confirmation_message = f"Do you want to fill out the Thought Diary? Trigger word: {trigger_word}"
+            return render_template("chat.html", messages=messages, confirmation_message=confirmation_message)
 
-                # Fetch any remaining unread results
-                while cursor.nextset():
-                    pass
-
-                #cursor.execute('SELECT triggers FROM CBT_trigger')
-                trigger_words = ["sad"]
-                # trigger_words = [word[0] for word in cursor.fetchall()]
-                trigger_word = check_trigger(user_input, trigger_words)
-
-                if trigger_word:
-                    print("trigger word is found")
-                    # Render the chat.html template with the trigger word
-                    confirmation_message = f"Do you want to fill out the Thought Diary? Trigger word: {trigger_word}"
-                    print(confirmation_message)
-                    return render_template("chat.html", messages=messages, confirmation_message=confirmation_message)
-                # Update the chatbot_response variable with bot_response
-                chatbot_response = bot_response
-        #return jsonify({"response": bot_response})
+        messages.append({"name": "ChatBot", "img": "/static/chatbot.png", "time": "12:00 PM", "text": bot_response})
+        print(messages)
+        return json.dumps({"bot_response": bot_response})
 
     return render_template("chat.html", messages=messages)
-
 
 
 @app.route("/handle_popup_response", methods=["POST"])
@@ -284,6 +250,7 @@ def thought_diary_post():
     # Return the Thought Diary page template
     return render_template("thought_diary.html")
 
+
 @app.route("/recommendation.html")
 def get_recommendations():
     # Fetch recommendations from the recommendation_log table
@@ -294,6 +261,7 @@ def get_recommendations():
     # Render the HTML template with the recommendations data
     return render_template("recommendation.html", recommendations=recommendations)
 
+
 @app.route("/chat_history.html", methods=["GET", "POST"])
 def chat_history():
     username = session["username"]
@@ -302,6 +270,7 @@ def chat_history():
     cursor.execute(query, (username,))
     thoughts = cursor.fetchall()
     return render_template("chat_history.html", thoughts=thoughts)
+
 
 @app.route("/add_thought_entry", methods=["POST"])
 def add_thought_entry():
