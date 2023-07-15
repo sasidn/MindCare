@@ -4,11 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Chatbot</title>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
 </head>
 
 <body>
@@ -21,135 +20,133 @@
 
     <main class="msger-chat">
         {% for message in messages %}
-        {% if message.side == "left" %}
-        <div class="msg left-msg">
-            {% else %}
-            <div class="msg right-msg">
-                {% endif %}
-                <div class="msg-img" style="background-image: url({{ message.img }})"></div>
-                <div class="msg-bubble">
-                    <div class="msg-info">
-                        <div class="msg-info-name">{{ message.name }}</div>
-                        <div class="msg-info-time">{{ message.time }}</div>
-                    </div>
-                    <div class="msg-text">{{ message.text }}</div>
+        <div class="msg {{ 'left' if message.side == 'left' else 'right' }}-msg">
+            <div class="msg-img" style="background-image: url({{ message.img }})"></div>
+            <div class="msg-bubble">
+                <div class="msg-info">
+                    <div class="msg-info-name">{{ message.name }}</div>
+                    <div class="msg-info-time">{{ message.time }}</div>
                 </div>
+                <div class="msg-text">{{ message.text }}</div>
             </div>
-            {% endfor %}
-
-            {% if bot_response %}
-            <div class="msg left-msg">
-                <div class="msg-img" style="background-image: url(/static/chatbot.png)"></div>
-                <div class="msg-bubble">
-                    <div class="msg-info">
-                        <div class="msg-info-name">ChatBot</div>
-                        <div class="msg-info-time">12:00 PM</div>
-                    </div>
-                    <div class="msg-text">{{ bot_response }}</div>
-                </div>
-            </div>
-            {% endif %}
+        </div>
+        {% endfor %}
     </main>
-
 
     <form class="msger-inputarea" method="POST" action="/chat">
         <input type="text" class="msger-input" id="textInput" name="message" placeholder="Enter your message...">
         <button type="submit" class="msger-send-btn">Send</button>
     </form>
 
-    {% if confirmation_message %}
-    <div class="popup">
-        <div class="popup-content">
-            <div class="popup-message">{{ confirmation_message }}</div>
-            <div class="popup-buttons">
-                <form id="popup-form" action="/handle_popup_response" method="POST">
-                    <input type="hidden" id="popup-response" name="popup_response">
-                    <button class="popup-button" onclick="handlePopupResponse('yes')">Yes</button>
-                    <button class="popup-button" onclick="handlePopupResponse('no')">No</button>
-                </form>
+    <div class="popup" id="popup" style="display: none;">
+        <h2>Do you want to fill the Thought Diary?</h2>
+        <form action="/handle_popup_response" method="POST">
+            <div class="button-container">
+                <button type="submit" name="popup_response" value="yes">
+                    <i class="fas fa-check"></i> Yes
+                </button>
+                <button type="submit" name="popup_response" value="no">
+                    <i class="fas fa-times"></i> No
+                </button>
             </div>
-        </div>
+
+        </form>
     </div>
-    {% endif %}
+
+    <script>
+            const msgerForm = document.querySelector(".msger-inputarea");
+            const msgerInput = document.querySelector(".msger-input");
+            const msgerChat = document.querySelector(".msger-chat");
+
+            const BOT_IMG = "/static/chatbot.png";
+            const PERSON_IMG = "/static/user.png";
+            const BOT_NAME = "ChatBot";
+            const PERSON_NAME = "You";
+
+            msgerForm.addEventListener("submit", event => {
+                event.preventDefault();
+
+                const msgText = msgerInput.value;
+                if (!msgText) return;
+
+                appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
+                msgerInput.value = "";
+                botResponse(msgText);
+            });
+
+            function appendMessage(name, img, side, text) {
+                const msgHTML = `
+                    <div class="msg ${side}-msg">
+                        <div class="msg-img" style="background-image: url(${img})"></div>
+                        <div class="msg-bubble">
+                            <div class="msg-info">
+                                <div class="msg-info-name">${name}</div>
+                                <div class="msg-info-time">${formatDate(new Date())}</div>
+                            </div>
+                            <div class="msg-text">${text}</div>
+                        </div>
+                    </div>
+                `;
+
+                msgerChat.insertAdjacentHTML("beforeend", msgHTML);
+                msgerChat.scrollTop += 500;
+            }
+
+            function formatDate(date) {
+                const h = ("0" + date.getHours()).slice(-2);
+                const m = ("0" + date.getMinutes()).slice(-2);
+                return `${h}:${m}`;
+            }
+
+            function botResponse(rawText) {
+                // Send the message to the server
+                $.post("/chat", { message: rawText }).done(function (data) {
+                    const response = JSON.parse(data);
+                    const botResponse = response.bot_response;
+                    appendMessage(BOT_NAME, BOT_IMG, "left", botResponse);
+
+                    const showPopup = response.show_popup;
+                    if (showPopup) {
+                        showPopupElement();
+                    }
+                });
+            }
+
+            // Show the popup element
+            function showPopupElement() {
+                const popupElement = document.getElementById('popup');
+                popupElement.style.display = 'block';
+            }
+
+            // Send the user's response to the server
+            function sendUserResponse(response) {
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: response })
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        // Process the response from the server
+                        console.log(data.bot_response);
+                        console.log(data.show_popup);
+                        console.log(data.messages);
+                    });
+            }
+
+            // Add event listeners to handle user's response to the popup
+            document.getElementById('yesButton').addEventListener('click', function () {
+                sendUserResponse('Yes');
+            });
+
+            document.getElementById('noButton').addEventListener('click', function () {
+                sendUserResponse('No');
+            });
+
+    </script>
 </section>
-
-<script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
-<script>
-  const msgerForm = document.querySelector(".msger-inputarea");
-  const msgerInput = document.querySelector(".msger-input");
-  const msgerChat = document.querySelector(".msger-chat");
-  const popup = document.querySelector(".popup");
-
-  const BOT_IMG = "/static/chatbot.png";
-  const PERSON_IMG = "/static/user.png";
-  const BOT_NAME = "ChatBot";
-  const PERSON_NAME = "You";
-
-  msgerForm.addEventListener("submit", event => {
-    event.preventDefault();
-
-    const msgText = msgerInput.value;
-    if (!msgText) return;
-
-    appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
-    msgerInput.value = "";
-    botResponse(msgText);
-  });
-
-  function appendMessage(name, img, side, text) {
-    const msgHTML = `
-      <div class="msg ${side}-msg">
-        <div class="msg-img" style="background-image: url(${img})"></div>
-        <div class="msg-bubble">
-          <div class="msg-info">
-            <div class="msg-info-name">${name}</div>
-            <div class="msg-info-time">${formatDate(new Date())}</div>
-          </div>
-          <div class="msg-text">${text}</div>
-        </div>
-      </div>
-    `;
-
-    msgerChat.insertAdjacentHTML("beforeend", msgHTML);
-    msgerChat.scrollTop += 500;
-  }
-
-  function botResponse(rawText) {
-    // Send the message to the server
-    $.post("/chat", { message: rawText }).done(function (data) {
-      const response = JSON.parse(data);
-      const botResponse = response.bot_response;
-      appendMessage(BOT_NAME, BOT_IMG, "left", botResponse);
-
-      const triggerWord = response.trigger_word;
-      if (triggerWord) {
-        openPopup(triggerWord);
-      }
-    });
-  }
-
-  function formatDate(date) {
-    const h = "0" + date.getHours();
-    const m = "0" + date.getMinutes();
-    return `${h.slice(-2)}:${m.slice(-2)}`;
-  }
-
-  function openPopup(triggerWord) {
-    const popupMessage = document.querySelector(".popup-message");
-    popupMessage.innerText = `Do you want to fill out the Thought Diary? Trigger word: ${triggerWord}`;
-    popup.style.display = "block";
-  }
-
-  function handlePopupResponse(response) {
-    const popupResponseInput = document.getElementById("popup-response");
-    popupResponseInput.value = response;
-    document.getElementById("popup-form").submit();
-  }
-
-
-
-</script>
-
 </body>
 
 </html>

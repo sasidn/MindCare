@@ -8,6 +8,7 @@ from datetime import date, datetime
 from chatGPT import start_chatbot
 import json
 
+
 app = Flask(__name__)
 
 # Configure Flask-Mail
@@ -183,34 +184,44 @@ def chat():
         {"name": "ChatBot", "img": "/static/chatbot.png", "time": "12:00 PM", "text": "Hello, how can I help you?"}
     ]
 
+    show_popup = False  # Flag to control popup display
+
     if request.method == "POST":
         user_input = request.form["message"]
         bot_response = start_chatbot(user_input)
 
         trigger_words = ["sad"]
-        trigger_word = check_trigger(user_input, trigger_words)
 
-        if trigger_word:
-            confirmation_message = f"Do you want to fill out the Thought Diary? Trigger word: {trigger_word}"
-            return render_template("chat.html", messages=messages, confirmation_message=confirmation_message)
+        if any(word in user_input.lower() for word in trigger_words):
+            show_popup = True
+            messages.append({"name": "ChatBot", "img": "/static/chatbot.png", "time": "12:00 PM",
+                             "text": "Do you want to proceed? (Yes/No)"})
+        else:
+            messages.append({"name": "User", "img": "/static/user.png", "time": "12:01 PM", "text": user_input})
 
-        messages.append({"name": "ChatBot", "img": "/static/chatbot.png", "time": "12:00 PM", "text": bot_response})
-        print(messages)
-        return json.dumps({"bot_response": bot_response})
+        messages.append({"name": "ChatBot", "img": "/static/chatbot.png", "time": "12:01 PM", "text": bot_response})
+        return json.dumps({"bot_response": bot_response, "show_popup": show_popup, "messages": messages})
 
     return render_template("chat.html", messages=messages)
 
 
-@app.route("/handle_popup_response", methods=["POST"])
+@app.route("/handle_popup_response", methods=["GET", "POST"])
 def handle_popup_response():
-    popup_response = request.form["popup_response"]
+    if request.method == "POST":
+        # Process the popup response
+        popup_response = request.form.get("popup_response")
 
-    if popup_response == "yes":
-        return redirect("/thought_diary")
-    elif popup_response == "no":
-        return redirect("/chat")
+        if popup_response == "yes":
+            return redirect("/thought_diary")
+        elif popup_response == "no":
+            return redirect("/chat")
+        else:
+            return redirect("/chat")
     else:
-        return redirect("/chat")
+        # Handle the case when the route is accessed with a different method (e.g., GET)
+        print("Invalid Method:", request.method)
+        return redirect("/chat")  # Or return an error response
+
 
 
 @app.route("/thought_diary.html")

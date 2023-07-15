@@ -30,16 +30,19 @@
   padding: 5px 10px;
 }
 
+
+
 .popup {
+  display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
 }
 
 .popup-content {
@@ -64,4 +67,12 @@
 
 .popup-button {
   margin: 0 10px;
+}
+
+.popup p {
+  margin-bottom: 10px;
+}
+
+.popup button {
+  margin-right: 10px;
 }
