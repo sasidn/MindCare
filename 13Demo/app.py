@@ -290,7 +290,6 @@ def chat_history():
 
     for mood in moods:
         labels.append(mood[0])
-
         data.append(mood[1])
 
     # Fetch emotional analysis data from the SQL table
@@ -299,10 +298,12 @@ def chat_history():
     emotions = cursor.fetchall()
     emotions_labels = []
     emotions_score = []
+    #responses = []
 
     for emotion in emotions:
         emotions_labels.append(emotion[0])
         emotions_score.append(emotion[1])
+        #responses.append(emotion[2])
 
 
     return render_template("chat_history.html", thoughts=thoughts,labels=labels, data=data, emotions_labels=emotions_labels, emotions_score=emotions_score)

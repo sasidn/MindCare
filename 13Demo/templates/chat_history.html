@@ -191,6 +191,30 @@
 
 <!-- JavaScript code to handle tab functionality -->
 <script>
+
+    function addThoughtEntry() {
+        // Get the thought entry data from the user (e.g., through a form or input fields)
+        var dateTime = prompt("Enter the date and time:");
+        var situation = prompt("Describe the situation:");
+        var automaticThought = prompt("Enter the automatic thought(s):");
+        var emotions = prompt("Enter the emotion(s):");
+        var adaptiveResponse = prompt("Enter the adaptive response:");
+        var outcome = prompt("Enter the outcome:");
+
+        // Create a new row in the table with the entered thought entry data
+        var tableBody = document.getElementById("thought-diary-table-body");
+        var newRow = tableBody.insertRow();
+
+        // Populate the cells in the new row with the thought entry data
+        newRow.innerHTML = `
+            <td>${dateTime}</td>
+            <td>${situation}</td>
+            <td>${automaticThought}</td>
+            <td>${emotions}</td>
+            <td>${adaptiveResponse}</td>
+            <td>${outcome}</td>
+        `;
+    }
     // Function to open a specific tab
     function openTab(tabId) {
         // Hide all tab contents
