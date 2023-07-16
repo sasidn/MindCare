@@ -280,7 +280,32 @@ def chat_history():
     query = "SELECT date,situation, automatic_thoughts, emotions,adaptive_response,outcome FROM thought_diary WHERE username = %s"
     cursor.execute(query, (username,))
     thoughts = cursor.fetchall()
-    return render_template("chat_history.html", thoughts=thoughts)
+
+    # Fetch mood tracker  from the SQL table
+    mood_query = "SELECT Message_id, sentiment FROM mood_tracker WHERE username = %s"
+    cursor.execute(mood_query, (username,))
+    moods = cursor.fetchall()
+    labels = []
+    data = []
+
+    for mood in moods:
+        labels.append(mood[0])
+
+        data.append(mood[1])
+
+    # Fetch emotional analysis data from the SQL table
+    emotion_query = "SELECT label, SCORE FROM emotional_analysis WHERE username = %s"
+    cursor.execute(emotion_query, (username,))
+    emotions = cursor.fetchall()
+    emotions_labels = []
+    emotions_score = []
+
+    for emotion in emotions:
+        emotions_labels.append(emotion[0])
+        emotions_score.append(emotion[1])
+
+
+    return render_template("chat_history.html", thoughts=thoughts,labels=labels, data=data, emotions_labels=emotions_labels, emotions_score=emotions_score)
 
 
 @app.route("/add_thought_entry", methods=["POST"])

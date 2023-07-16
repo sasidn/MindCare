@@ -1,68 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #F4F4F4;
-            margin: 0;
-            padding: 20px;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #F4F4F4;
+        margin: 0;
+        padding: 20px;
+    }
 
-        h1 {
-            font-size: 24px;
-            font-weight: bold;
-            color: #16425B;
-            margin-top: 0;
-        }
+    h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #16425B;
+        margin-top: 0;
+    }
 
-        .thought-diary-container {
-            margin-top: 20px;
-        }
+    .thought-diary-container {
+        margin-top: 20px;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #AAAAAA;
-        }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #AAAAAA;
+    }
 
-        .button-container {
-            background-color: #2F6690;
-            color: #FFFFFF;
-            text-align: center;
-            margin-top: 20px;
-        }
+    .button-container {
+        background-color: #2F6690;
+        color: #FFFFFF;
+        text-align: center;
+        margin-top: 20px;
+    }
 
-        .btn {
-            background-color: #87cef;
-            color: #FFFFFF;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn-submit {
+    .btn {
+        background-color: #87cef;
+        color: #FFFFFF;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-submit {
         background-color: #81C3D7;
         color: #FFFFFF;
         padding: 10px 20px;
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        }
-         table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    }
 
-        th, td {
-            padding: 10px;
-            border: 1px solid #AAAAAA;
-        }
-        .tab-button {
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid #AAAAAA;
+    }
+
+    .tab-button {
         /* Default button styles */
         background-color: #3A7CA5;
         color: #ffffff;
@@ -71,50 +74,51 @@
         font-size: 16px;
         border-radius: 4px;
         cursor: pointer;
-        }
-         .tab-button:hover {
-            background-color: #81C3D7;
-        }
+    }
 
-        .emotional-analysis {
+    .tab-button:hover {
+        background-color: #81C3D7;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .active-tab {
+        display: block;
+    }
+
+    .emotional-analysis {
         background-color: #3A7CA5; /* Update with your desired color for emotional analysis */
-        }
+    }
 
-        .mood-tracker {
-        background-color: #16425B; /* Update with your desired color for mood tracker */
-        }
-
-        .thought-diary {
+    .thought-diary {
         background-color: #16425B; /* Update with your desired color for thought diary */
-        }
+    }
+
+
+
 </style>
 <head>
-    <!-- Head content -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>-->
 </head>
 <body>
-    <!-- Container for the tabs -->
-    <div id="tab-container">
-        <!-- Tab navigation -->
-        <div class="tab-navigation">
+<!-- Container for the tabs -->
+<div id="tab-container">
+    <!-- Tab navigation -->
+    <div class="tab-navigation">
+        <button class="tab-button" onclick="openTab('thought-diary')">Thought Diary</button>
+        <button class="tab-button" onclick="openTab('sentiment-tracker')">Sentiment Tracker</button>
+        <button class="tab-button" onclick="openTab('emotional-analysis')">Emotional Analysis</button>
+    </div>
 
-            <button class="tab-button" onclick="openTab('emotional-analysis')">Emotional Analysis</button>
-            <button class="tab-button" onclick="openTab('mood-tracker')">Mood Tracker</button>
-            <button class="tab-button" onclick="openTab('thought-diary')">Thought Diary</button>
-        </div>
-
-        <!-- Tab content -->
-
-        <div class="tab-content" id="emotional-analysis">
-            <!-- Emotional Analysis content -->
-        </div>
-
-        <div class="tab-content" id="mood-tracker">
-            <!-- Mood Tracker content -->
-        </div>
-
+    <!-- Tab content -->
+    <div class="tab-content" id="thought-diary">
+        <!-- Thought Diary content -->
         <div class="thought-diary-container">
-        <table>
-            <thead>
+            <table>
+                <thead>
                 <tr>
                     <th>Date/Time</th>
                     <th>Situation</th>
@@ -123,8 +127,8 @@
                     <th>Adaptive Response</th>
                     <th>Outcome</th>
                 </tr>
-            </thead>
-            <tbody id="thought-diary-table-body">
+                </thead>
+                <tbody id="thought-diary-table-body">
                 {% for row in thoughts %}
                 <tr>
                     <td>{{ row[0] }}</td>
@@ -135,12 +139,12 @@
                     <td>{{ row[5] }}</td>
                 </tr>
                 {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
 
-        <form action="/add_thought_entry" method="POST">
-            <table>
-                <tbody>
+            <form action="/add_thought_entry" method="POST">
+                <table>
+                    <tbody>
                     <tr>
                         <td>
                             <input type="text" name="date" value="{{ current_date }}" placeholder="Date">
@@ -161,52 +165,107 @@
                             <input type="text" name="outcome" placeholder="Outcome">
                         </td>
                     </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
 
-            <div class="button-container">
-                <button class="btn-submit" type="submit">Add Thought Entry</button>
-            </div>
-        </form>
+                <div class="button-container">
+                    <button class="btn-submit" type="submit">Add Thought Entry</button>
+                </div>
+            </form>
+        </div>
     </div>
 
+    <div class="tab-content" id="sentiment-tracker">
+        <div style="height: 50vh; width: 50%;">
+            <canvas id="sentimentChart"></canvas>
+        </div>
+    </div>
 
-    <!-- JavaScript code to handle tab functionality -->
-    <script>
-        function addThoughtEntry() {
-            // Get the thought entry data from the user (e.g., through a form or input fields)
-            var dateTime = prompt("Enter the date and time:");
-            var situation = prompt("Describe the situation:");
-            var automaticThought = prompt("Enter the automatic thought(s):");
-            var emotions = prompt("Enter the emotion(s):");
-            var adaptiveResponse = prompt("Enter the adaptive response:");
-            var outcome = prompt("Enter the outcome:");
+    <div class="tab-content" id="emotional-analysis">
+        <!-- Emotional Analysis content -->
+        <div style="height: 400px; width: 600px;">
+            <canvas id="emotionalAnalysisChart"></canvas>
+        </div>
+    </div>
+</div>
 
-            // Create a new row in the table with the entered thought entry data
-            var tableBody = document.getElementById("thought-diary-table-body");
-            var newRow = tableBody.insertRow();
-
-            // Populate the cells in the new row with the thought entry data
-            newRow.innerHTML = `
-                <td>${dateTime}</td>
-                <td>${situation}</td>
-                <td>${automaticThought}</td>
-                <td>${emotions}</td>
-                <td>${adaptiveResponse}</td>
-                <td>${outcome}</td>
-            `;
+<!-- JavaScript code to handle tab functionality -->
+<script>
+    // Function to open a specific tab
+    function openTab(tabId) {
+        // Hide all tab contents
+        const tabContents = document.getElementsByClassName('tab-content');
+        for (let i = 0; i < tabContents.length; i++) {
+            tabContents[i].style.display = 'none';
         }
-        // Function to open a specific tab
-        function openTab(tabId) {
-            // Hide all tab contents
-            const tabContents = document.getElementsByClassName('tab-content');
-            for (let i = 0; i < tabContents.length; i++) {
-                tabContents[i].style.display = 'none';
-            }
 
-            // Show the selected tab content
-            document.getElementById(tabId).style.display = 'block';
+        // Show the selected tab content
+        document.getElementById(tabId).style.display = 'block';
+
+        // If the Sentiment Tracker tab is opened, initialize the chart
+        if (tabId === 'sentiment-tracker') {
+            const labels = {{ labels | tojson }};
+            const data = {{ data | tojson }};
+
+            const config = {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sentiment Score',
+                        data: data,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+
+            // Initialize the chart
+            const sentimentChart = new Chart(document.getElementById('sentimentChart'), config);
         }
-    </script>
+
+        // If the Emotional Analysis tab is opened, generate the chart
+        if (tabId === 'emotional-analysis') {
+            const labels = {{ emotions_labels | tojson }};
+            const data = {{ emotions_score | tojson }};
+
+            const config = {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Emotion Score',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+
+            // Initialize the chart
+            const emotionalAnalysisChart = new Chart(document.getElementById('emotionalAnalysisChart'), config);
+        }
+    }
+
+
+</script>
 </body>
 </html>
