@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #F4F4F4;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #16425B;
+        margin-top: 0;
+    }
+
+    .thought-diary-container {
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #AAAAAA;
+    }
+
+    .button-container {
+        background-color: #2F6690;
+        color: #FFFFFF;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn {
+        background-color: #87cef;
+        color: #FFFFFF;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-submit {
+        background-color: #81C3D7;
+        color: #FFFFFF;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid #AAAAAA;
+    }
+
+    .tab-button {
+        /* Default button styles */
+        background-color: #3A7CA5;
+        color: #ffffff;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .tab-button:hover {
+        background-color: #81C3D7;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .active-tab {
+        display: block;
+    }
+
+    .emotional-analysis {
+        background-color: #3A7CA5; /* Update with your desired color for emotional analysis */
+    }
+
+    .thought-diary {
+        background-color: #16425B; /* Update with your desired color for thought diary */
+    }
+
+
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat History</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+<h1>Emotional Analysis</h1>
+<h2>Select a Response:</h2>
+<select id="responseDropdown" onchange="updateEmotionalAnalysis()">
+    <option value="">Select Response</option>
+    {% for response in responses %}
+    <option value="{{ response }}">{{ response }}</option>
+    {% endfor %}
+</select>
+<div id="chart"></div>
+<script>
+        function updateEmotionalAnalysis() {
+            const selectedResponse = document.getElementById('responseDropdown').value;
+
+            // Send an AJAX request to the server to fetch updated emotional analysis data
+            fetch('/update_emotional_analysis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ response: selectedResponse }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const emotionsLabels = data.emotions_labels;
+                const emotionsScore = data.emotions_score;
+
+                const chartData = [
+                    {
+                        x: emotionsLabels,
+                        y: emotionsScore,
+                        type: 'bar'
+                    }
+                ];
+
+                const layout = {
+                    title: `Emotional Analysis for Response: ${selectedResponse}`,
+                    xaxis: {
+                        title: 'Emotion'
+                    },
+                    yaxis: {
+                        title: 'Score'
+                    }
+                };
+
+                Plotly.newPlot('chart', chartData, layout);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+</script>
+</body>
+</html>

@@ -100,24 +100,24 @@
 
 
 
+
+
 </style>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHAT HISTORY</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>-->
 </head>
 <body>
-<!-- Include Plotly library -->
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<!-- Include Chart.js library -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Container for the tabs -->
 <div id="tab-container">
+    <!-- Tab navigation -->
     <div class="tab-navigation">
         <button class="tab-button" onclick="openTab('thought-diary')">Thought Diary</button>
         <button class="tab-button" onclick="openTab('sentiment-tracker')">Sentiment Tracker</button>
         <button class="tab-button" onclick="openTab('emotional-analysis')">Emotional Analysis</button>
     </div>
 
+    <!-- Tab content -->
     <div class="tab-content" id="thought-diary">
         <!-- Thought Diary content -->
         <div class="thought-diary-container">
@@ -184,20 +184,22 @@
             <canvas id="sentimentChart"></canvas>
         </div>
     </div>
-    <div class="tab-content" id="emotional-analysis">
-        <h1>Emotional Analysis</h1>
-        <h2>Select a Response:</h2>
-        <select id="responseDropdown" onchange="updateEmotionalAnalysis()">
-            <option value="">Select Response</option>
-            {% for response in responses %}
-            <option value="{{ response }}">{{ response }}</option>
-            {% endfor %}
-        </select>
-        <div id="chart"></div>
-    </div>
+
+    <h1>Emotional Analysis</h1>
+    <h2>Select a Response:</h2>
+    <select id="responseDropdown" onchange="updateEmotionalAnalysis()">
+        <option value="">Select Response</option>
+        {% for response in responses %}
+        <option value="{{ response }}">{{ response }}</option>
+        {% endfor %}
+    </select>
+    <div id="chart"></div>
 </div>
+
+<!-- JavaScript code to handle tab functionality -->
 <script>
-function addThoughtEntry() {
+
+    function addThoughtEntry() {
         // Get the thought entry data from the user (e.g., through a form or input fields)
         var dateTime = prompt("Enter the date and time:");
         var situation = prompt("Describe the situation:");
@@ -220,100 +222,88 @@ function addThoughtEntry() {
             <td>${outcome}</td>
         `;
     }
-function openTab(tabId) {
-    // Get all tab content elements
-    const tabContents = document.getElementsByClassName('tab-content');
-
-    // Hide all tab content elements
-    for (let i = 0; i < tabContents.length; i++) {
-        tabContents[i].style.display = 'none';
-    }
-
-    // Show the selected tab content
-    const selectedTabContent = document.getElementById(tabId);
-    selectedTabContent.style.display = 'block';
-
-    // Add the 'active-tab' class to the selected tab button
-    const tabButtons = document.getElementsByClassName('tab-button');
-    for (let i = 0; i < tabButtons.length; i++) {
-        tabButtons[i].classList.remove('active-tab');
-    }
-    const selectedTabButton = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
-    selectedTabButton.classList.add('active-tab');
-
-    // If the selected tab is the Emotional Analysis tab, update the emotional analysis chart
-    if (tabId === 'emotional-analysis') {
-        updateEmotionalAnalysis();
-    }
-
-    // If the Sentiment Tracker tab is opened, initialize the sentiment chart
-    const labels = {{ sentiment_labels | tojson }};
-    const data = {{ sentiment_data | tojson }};
-
-    const chartData = [{
-        x: labels,
-        y: data,
-        type: 'line',
-        marker: {
-            color: 'rgba(255, 99, 132, 0.2)',
-            line: {
-                color: 'rgba(255, 99, 132, 1)',
-                width: 1
+    // Function to open a specific tab
+        function openTab(tabId) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].style.display = 'none';
             }
-        }
-    }];
 
-    const layout = {
-        title: 'Sentiment Chart',
-        xaxis: {
-            title: 'Date/Time'
-        },
-        yaxis: {
-            title: 'Sentiment Score'
-        }
-    };
+            // Show the selected tab content
+            document.getElementById(tabId).style.display = 'block';
 
-    Plotly.newPlot('sentimentChart', chartData, layout);
-}
+            // If the Sentiment Tracker tab is opened, initialize the chart
+            if (tabId === 'sentiment-tracker') {
+                const labels = {{ sentiment_labels | tojson }};
+                const data = {{ sentiment_data | tojson }};
 
-// Rest of your code...
-function updateEmotionalAnalysis() {
-    const selectedResponse = document.getElementById('responseDropdown').value;
+                const config = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Sentiment Score',
+                            data: data,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                };
 
-    // Send an AJAX request to the server to fetch updated emotional analysis data
-    fetch('/update_emotional_analysis', {
+                // Initialize the chart
+                const sentimentChart = new Chart(document.getElementById('sentimentChart'), config);
+            }
+
+            if (tabId === 'emotional-analysis') {
+      const selectedResponse = document.getElementById('responseDropdown').value;
+
+      // Send an AJAX request to the server to fetch updated emotional analysis data
+      fetch('/update_emotional_analysis', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ response: selectedResponse }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        const emotionsLabels = data.emotions_labels;
-        const emotionsScore = data.emotions_score;
+      })
+        .then(response => response.json())
+        .then(data => {
+          const emotionsLabels = data.emotions_labels;
+          const emotionsScore = data.emotions_score;
 
-        const chartData = {
-            x: emotionsLabels,
-            y: emotionsScore,
-            type: 'bar'
-        };
+          const data = [
+            {
+              x: emotionsLabels,
+              y: emotionsScore,
+              type: 'bar'
+            }
+          ];
 
-        const layout = {
+          const layout = {
             title: `Emotional Analysis for Response: ${selectedResponse}`,
             xaxis: {
-                title: 'Emotion'
+              title: 'Emotion'
             },
             yaxis: {
-                title: 'Score'
+              title: 'Score'
             }
-        };
+          };
 
-        Plotly.newPlot('chart', [chartData], layout);
-    })
-    .catch(error => console.error('Error:', error));
+          Plotly.newPlot('chart', data, layout);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  }
 
-}
 
 
 </script>
